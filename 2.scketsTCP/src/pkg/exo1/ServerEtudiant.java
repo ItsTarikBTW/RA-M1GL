@@ -37,15 +37,7 @@ class ServerEtudiant {
 				System.out.println("connecte");
 				ObjectOutputStream sockOut = new ObjectOutputStream(sock.getOutputStream());
 				BufferedReader sockIn = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-				// ? QUESTION 1: get size of send and receive buffers
-				try {
-					int sendBufferSize = sock.getSendBufferSize();
-					int receiveBufferSize = sock.getReceiveBufferSize();
-					System.out.println("Send buffer size: " + sendBufferSize);
-					System.out.println("Receive buffer size: " + receiveBufferSize);
-				} catch (SocketException e) {
-					e.printStackTrace();
-				}
+
 				String recu;
 				while ((recu = sockIn.readLine()) != null) {
 					System.out.println("recu :" + recu);
@@ -79,8 +71,7 @@ class ServerEtudiant {
 			}
 		}
 	}// fin main
-		// ? QUESTION 4:
-
+	// ? QUESTION 4:
 	public static Etudiant[] getEtudiantsMinGrade(float minGrade, Etudiant[] tabEtudiant) {
 		HashSet<Etudiant> etudiants = new HashSet<Etudiant>();
 		for (Etudiant etudiant : tabEtudiant) {
@@ -90,7 +81,6 @@ class ServerEtudiant {
 		}
 		return etudiants.toArray(new Etudiant[etudiants.size()]);
 	}
-
 	public static Etudiant getHigherGrade(String specialite, Etudiant[] tabEtudiant) {
 		int maxGrade = 0;
 		Etudiant magor = null;

@@ -26,7 +26,7 @@ public class ClientEcho {
             System.exit(1);
         } catch (IOException e) {
             System.err.println("connection impossible avec : localhost");
-            System.exit(1);
+            System.exit(2);
         }
         System.out.println("tapez non pour terminer");
         Scanner scan = new Scanner(System.in);
@@ -37,6 +37,8 @@ public class ClientEcho {
             sockOut.write(buffer1);
             sockOut.flush();
         } catch (IOException e) {
+            System.err.println("erreur d'envoi de message");
+            System.exit(3);
         }
         byte[] buffer2 = new byte[1024];
         int lu = sockIn.read(buffer2);
