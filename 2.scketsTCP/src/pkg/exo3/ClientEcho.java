@@ -42,7 +42,7 @@ public class ClientEcho {
         }
         byte[] buffer2 = new byte[1024];
         int lu = sockIn.read(buffer2);
-        System.out.println("Mot envoyé par le serveur est : " + new String(buffer2));
+        System.out.println("Mot envoyé par le serveur est : " + new String(buffer2).trim());
         System.out.println("Nombre d'octets lu : " + lu);
         scan.close();
         sockOut.close();

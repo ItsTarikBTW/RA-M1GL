@@ -14,9 +14,9 @@ import java.net.Socket;
  * @author tarik
  */
 public class ClientHandler extends Thread{
-    private Socket sock;
-    private OutputStream sockOut;
-    private InputStream sockIn;
+    private final Socket sock;
+    private final OutputStream sockOut;
+    private final InputStream sockIn;
 
     public ClientHandler(Socket sock) throws IOException {
         this.sock = sock;
