@@ -43,12 +43,18 @@ public class ServeurUDPint {
             ArrayList<Joueur> joueurs;
             if (data2.length() == 1) {
                 joueurs = getJoueursByN(data2);
+                System.out.println("n");
             } else {
                 joueurs = getJoueursByE(data2);
+                System.out.println("e");
             }
-            for (Joueur joueur : joueurs) {
-                System.out.println(joueur);
-            }
+            
+            ByteArrayOutputStream a = new ByteArrayOutputStream();
+            ObjectOutputStream c2 = new ObjectOutputStream(a);
+            c2.writeObject(joueurs);
+            byte[] buffer = a.toByteArray();
+            DatagramPacket packet2 =new DatagramPacket(buffer, buffer.length, packet.getAddress(), packet.getPort());
+            socket.send(packet2);
         }
 
         socket.close();

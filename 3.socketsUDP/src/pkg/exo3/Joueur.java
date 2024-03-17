@@ -8,7 +8,9 @@ package pkg.exo3;
  *
  * @author tarik
  */
-public class Joueur {
+
+import java.io.Serializable;
+public class Joueur implements Serializable {
     int numero;
     String nom;
     String equipe;

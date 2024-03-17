@@ -10,6 +10,7 @@ package pkg.exo3;
  */
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class ClientUDPint {
@@ -32,6 +33,21 @@ public class ClientUDPint {
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length, serveur, 2000);
             socket.send(packet);
             System.out.println("Client sent: " + userInput);
+            if (userInput.toLowerCase().equals("exit")) {
+                break;
+            }
+            DatagramPacket packet2 = new DatagramPacket(new byte[1024], 1024);
+            socket.receive(packet2);
+            byte[] data = packet2.getData();
+            ObjectInputStream c2 = new ObjectInputStream(new ByteArrayInputStream(data));
+            Object obj = c2.readObject();
+            ArrayList<Joueur> data2;
+            System.out.println("Server response: ");
+            data2 = (ArrayList<Joueur>) obj;
+            for (Joueur joueur : data2) {
+                System.out.println("\t"+joueur);
+            }
+            System.out.println("End of server response");
         }
         scanner.close();
         socket.close();
