@@ -8,49 +8,57 @@ import java.util.Scanner;
  *
  * @author tarik
  */
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class Client1 {
     public static void main(String[] args) throws IOException {
-        String hostName = "localhost";
-        Socket sock = null;
-        PrintWriter sockOut = null;
-        DataInputStream sockIn = null;
+    String hostName = "localhost";
+    Socket sock = new Socket(hostName, 7777);
+    PrintWriter sockOut = new PrintWriter(sock.getOutputStream(), true);
+    DataInputStream sockIn = new DataInputStream(sock.getInputStream());
+
+    // Create JFrame
+    JFrame frame = new JFrame("Client");
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    frame.setSize(400, 200);
+
+    // Create JTextField
+    JTextField textField = new JTextField();
+    textField.setPreferredSize(new Dimension(150, 20));
+
+    // Create JLabel
+    JLabel label = new JLabel();
+    label.setPreferredSize(new Dimension(150, 20));
+
+    // Create JButton
+    JButton button = new JButton("Send");
+    button.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+        String message = textField.getText().toLowerCase();
+        sockOut.println(message);
         try {
-            sock = new Socket();
-            SocketAddress sockaddr = new InetSocketAddress("localhost", 8888);
-            sock.bind(sockaddr);
-            sock.connect(new InetSocketAddress(hostName, 7777));
-
-            sockOut = new PrintWriter(sock.getOutputStream(), true);
-            sockIn = new DataInputStream(sock.getInputStream());
-        } catch (UnknownHostException e) {
-            System.err.println("host non atteignable : " + hostName);
-            System.exit(1);
-        } catch (IOException e) {
-            System.err.println("connection impossible avec : " + hostName);
+            long recu = sockIn.readLong();
+            label.setText("Les nombres d'occ est : " + recu);
+        } catch (IOException ex) {
+            System.err.println("Classe inconnue : " + hostName);
             System.exit(1);
         }
-        System.out.println("tapez non pour terminer");
-        Scanner scan = new Scanner(System.in);
-        String message = scan.nextLine().toLowerCase();
-        while (!message.equals("exit")) { 
-            sockOut.println(message);
-            try {
-                Object recu = sockIn.readLong();
-
-                System.out.println("Les nombres d'occ est :");
-                System.out.println(recu);
-            } catch (IOException e) {
-                System.err.println("Classe inconnue : " + hostName);
-                System.exit(1);
-            }
-            
-            message = scan.nextLine().toLowerCase();
-            sockOut.flush();
+        textField.setText("");
         }
-        sockOut.close();
-        sockIn.close();
-        sock.close();
-        scan.close();
+    });
+
+    // Add JTextField, JLabel and JButton to JFrame
+    frame.getContentPane().add(textField, BorderLayout.NORTH);
+    frame.getContentPane().add(label, BorderLayout.CENTER);
+    frame.getContentPane().add(button, BorderLayout.SOUTH);
+
+    // Center the window
+    frame.setLocationRelativeTo(null);
+
+    frame.setVisible(true);
     }
 }
