@@ -12,9 +12,74 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Client2 {
+    static String username;
+    static String password;
     public static void main(String[] args) throws IOException {
+        // Create JFrame for login
+        JFrame loginFrame = new JFrame("Login");
+        loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        loginFrame.setSize(300, 150);
+
+        // Create JLabels and fields for username and password
+        JLabel usernameLabel = new JLabel("Username:");
+        JTextField usernameField = new JTextField();
+        JLabel passwordLabel = new JLabel("Password:");
+        JPasswordField passwordField = new JPasswordField();
+
+        // Create login button
+        JButton loginButton = new JButton("Login");
+        loginButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                username = usernameField.getText();
+                password = new String(passwordField.getPassword());
+                
+                try {
+                    Socket socket = new Socket("localhost", 9001);
+                    DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+
+                    out.writeUTF("auth");
+                    out.writeUTF(username);
+                    out.writeUTF(password);
+                    // get the response from the server
+                    DataInputStream in = new DataInputStream(socket.getInputStream());
+                    String response = in.readUTF();
+                    if (response.equals("Authentication failed")) {
+                        System.out.println("Authentication failed");
+                        JOptionPane.showMessageDialog(loginFrame, "Invalid username or password.");
+
+                    }else{
+                        System.out.println("Authentication successful");
+                        // Open main application window
+                        loginFrame.setVisible(false);
+                        openMainWindow();
+                    }
         
-        // Create JFrame
+                } catch (IOException ex) {
+                    Logger.getLogger(Client2.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
+        // Create JPanel and add components to it
+        JPanel loginPanel = new JPanel(new GridLayout(3, 2));
+        loginPanel.add(usernameLabel);
+        loginPanel.add(usernameField);
+        loginPanel.add(passwordLabel);
+        loginPanel.add(passwordField);
+        loginPanel.add(new JLabel()); // Empty label for alignment
+        loginPanel.add(loginButton);
+
+        // Add JPanel to JFrame
+        loginFrame.getContentPane().add(loginPanel);
+
+        // Center the window
+        loginFrame.setLocationRelativeTo(null);
+        loginFrame.setVisible(true);
+        
+    }
+
+    private static void openMainWindow() {// Create JFrame
         JFrame frame = new JFrame("Client");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 200);
@@ -83,6 +148,5 @@ public class Client2 {
         // Center the window
         frame.setLocationRelativeTo(null);
 
-        frame.setVisible(true);
-    }
+        frame.setVisible(true);}
 }
