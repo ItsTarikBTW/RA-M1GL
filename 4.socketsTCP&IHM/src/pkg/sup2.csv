@@ -1,8 +1,8 @@
-nom,prenom,gender,dateNes,dateReq
 hammoumi,tarik,homme,25/11/2002,07/09/2012
 john,snow,homme,18/04/1980,18/01/2000
-targerian,daenerys,femme,05/05/1960,06/12/1995
+a,a,femme,05/05/1960,06/12/1995
 stark,arya,femme,15/08/1995,13/07/2014
 stark,robb,homme,27/03/1965,19/09/1990
-a,b,homme,01/01/2000,01/01/2000
-b,b,femme,01/01/2000,01/01/2000
+a,b,homme,01/01/2000,01/01/2014
+b,b,femme,01/01/2000,01/01/2014
+c,c,homme,01/01/2014,01/01/2022

@@ -27,6 +27,9 @@ public class Client2 {
         // Create JTextField
         JTextField textField = new JTextField();
         textField.setPreferredSize(new Dimension(150, 20));
+        // Create JTextField
+        JTextField textField2 = new JTextField();
+        textField2.setPreferredSize(new Dimension(150, 20));
 
         // Create JLabel
         JLabel label = new JLabel();
@@ -37,7 +40,7 @@ public class Client2 {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String message = textField.getText().toLowerCase();
+                String message = textField.getText().toLowerCase()+" "+textField2.getText().toLowerCase();
                 sockOut.println(message);
                 try {
                     Object recu = sockIn.readBoolean();
@@ -47,11 +50,18 @@ public class Client2 {
                     System.exit(1);
                 }
                 textField.setText("");
+                textField2.setText("");
             }
         });
 
-        // Add JTextField, JLabel and JButton to JFrame
-        frame.getContentPane().add(textField, BorderLayout.NORTH);
+        // Create JPanel with BoxLayout
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.add(textField);
+        panel.add(textField2);
+
+        // Add JPanel, JLabel and JButton to JFrame
+        frame.getContentPane().add(panel, BorderLayout.NORTH);
         frame.getContentPane().add(label, BorderLayout.CENTER);
         frame.getContentPane().add(button, BorderLayout.SOUTH);
         frame.setLocationRelativeTo(null);
