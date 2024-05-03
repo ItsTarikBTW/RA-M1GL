@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 public class Client2 {
     static String username;
     static String password;
+
     public static void main(String[] args) throws IOException {
         // Create JFrame for login
         JFrame loginFrame = new JFrame("Login");
@@ -33,12 +34,13 @@ public class Client2 {
             public void actionPerformed(ActionEvent e) {
                 username = usernameField.getText();
                 password = new String(passwordField.getPassword());
-                
+
                 try {
                     Socket socket = new Socket("localhost", 9001);
                     DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
                     out.writeUTF("auth");
+                    out.writeUTF("c->s");
                     out.writeUTF(username);
                     out.writeUTF(password);
                     // get the response from the server
@@ -48,13 +50,13 @@ public class Client2 {
                         System.out.println("Authentication failed");
                         JOptionPane.showMessageDialog(loginFrame, "Invalid username or password.");
 
-                    }else{
+                    } else {
                         System.out.println("Authentication successful");
                         // Open main application window
                         loginFrame.setVisible(false);
                         openMainWindow();
                     }
-        
+
                 } catch (IOException ex) {
                     Logger.getLogger(Client2.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -76,7 +78,7 @@ public class Client2 {
         // Center the window
         loginFrame.setLocationRelativeTo(null);
         loginFrame.setVisible(true);
-        
+
     }
 
     private static void openMainWindow() {// Create JFrame
@@ -87,9 +89,11 @@ public class Client2 {
         // Create JLabels
         JLabel label1 = new JLabel("File Type:");
         JLabel label2 = new JLabel("File Path:");
+        JLabel label3 = new JLabel("Operation:");
 
         // Create JComboBox and JTextField
         JComboBox<String> comboBox = new JComboBox<>(new String[] { "txt", "image" });
+        JComboBox<String> operationComboBox = new JComboBox<>(new String[] { "c->s", "s->c" });
         JTextField textField = new JTextField();
 
         // Create JButton
@@ -103,7 +107,7 @@ public class Client2 {
                 } catch (IOException ex) {
                     Logger.getLogger(Client2.class.getName()).log(Level.SEVERE, null, ex);
                 }
-        DataOutputStream out = null;
+                DataOutputStream out = null;
                 try {
                     out = new DataOutputStream(socket.getOutputStream());
                 } catch (IOException ex) {
@@ -111,16 +115,32 @@ public class Client2 {
                 }
 
                 String fileType = comboBox.getSelectedItem().toString();
+                String operation = operationComboBox.getSelectedItem().toString();
                 String filePath = textField.getText();
                 try {
                     out.writeUTF(fileType);
-                    if (fileType.equals("image")) {
-                        BufferedImage bimg = ImageIO.read(new File(filePath));
-                        ImageIO.write(bimg, "JPG", socket.getOutputStream());
-                        System.out.println("Image sent");
-                    } else if (fileType.equals("txt")) {
-                        ABC.mystere(new FileInputStream(filePath), socket.getOutputStream());
-                        System.out.println("Text file sent");
+                    out.writeUTF(operation);
+                    if (operation.equals("c->s")) {
+                        if (fileType.equals("image")) {
+                            BufferedImage bimg = ImageIO.read(new File(filePath));
+                            ImageIO.write(bimg, "JPG", socket.getOutputStream());
+                            System.out.println("Image sent");
+                        } else if (fileType.equals("txt")) {
+                            ABC.mystere(new FileInputStream(filePath), socket.getOutputStream());
+                            System.out.println("Text file sent");
+                        }
+                    } else {
+                        //TODO: s->c
+                        //send the file path
+                        out.writeUTF(filePath);
+                        if (fileType.equals("image")) {
+                            BufferedImage img = ImageIO.read(ImageIO.createImageInputStream(socket.getInputStream()));
+                            ImageIO.write(img, "JPG", new File("./src/testC.JPG"));
+                            System.out.println("Image received");
+                        } else if (fileType.equals("txt")) {
+                            ABC.mystere(socket.getInputStream(), new FileOutputStream("./src/testC.txt"));
+                            System.out.println("Text file received");
+                        }
                     }
                     out.close();
                     socket.close();
@@ -134,11 +154,13 @@ public class Client2 {
             */
 
         // Create JPanel and add components to it
-        JPanel panel = new JPanel(new GridLayout(3, 2));
+        JPanel panel = new JPanel(new GridLayout(4, 2));
         panel.add(label1);
         panel.add(comboBox);
         panel.add(label2);
         panel.add(textField);
+        panel.add(label3);
+        panel.add(operationComboBox);
         panel.add(new JLabel()); // Empty label for alignment
         panel.add(button);
 
@@ -148,5 +170,6 @@ public class Client2 {
         // Center the window
         frame.setLocationRelativeTo(null);
 
-        frame.setVisible(true);}
+        frame.setVisible(true);
+    }
 }

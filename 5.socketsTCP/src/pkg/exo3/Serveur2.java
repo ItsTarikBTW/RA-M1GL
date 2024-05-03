@@ -8,12 +8,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Serveur2 {
-     private static Map<String, String> users = new HashMap<>();
+    private static Map<String, String> users = new HashMap<>();
 
     static {
         users.put("admin", "123");
         users.put("tarik", "0000");
     }
+
     public static void main(String[] args) throws IOException {
         ServerSocket serverSocket = new ServerSocket(9001);
         while (true) {
@@ -34,10 +35,11 @@ public class Serveur2 {
             try {
                 DataInputStream in = new DataInputStream(clientSocket.getInputStream());
                 String type = in.readUTF();
-                if(type.equals("auth")){
+                String direction = in.readUTF(); // c->s ou s->c
+                if (type.equals("auth")) {
                     String username = in.readUTF();
                     String password = in.readUTF();
-                    
+
                     // Replace with your actual username and password
                     DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
                     if (!users.containsKey(username) || !users.get(username).equals(password)) {
@@ -45,14 +47,27 @@ public class Serveur2 {
                     } else {
                         out.writeUTF("Authentication successful");
                     }
-                }else if (type.equals("image")) {
-                    BufferedImage img = ImageIO.read(ImageIO.createImageInputStream(clientSocket.getInputStream()));
-                    ImageIO.write(img, "JPG", new File("./src/test.JPG"));
-                    System.out.println("Image reçue");
-                } else if (type.equals("txt")) {
-                    ABC A = new ABC();
-                    A.mystere(clientSocket.getInputStream(), new FileOutputStream("./src/test2.txt"));
-                    System.out.println("Fichier texte reçu");
+                } else if (direction.equals("c->s")) {
+                    if (type.equals("image")) {
+                        BufferedImage img = ImageIO.read(ImageIO.createImageInputStream(clientSocket.getInputStream()));
+                        ImageIO.write(img, "JPG", new File("./src/testS.JPG"));
+                        System.out.println("Image reçue");
+                    } else if (type.equals("txt")) {
+                        ABC A = new ABC();
+                        A.mystere(clientSocket.getInputStream(), new FileOutputStream("./src/testS.txt"));
+                        System.out.println("Fichier texte reçu");
+                    }
+                } else if (direction.equals("s->c")) {
+                    String filePath = in.readUTF();
+                    if (type.equals("image")) {
+                        BufferedImage img = ImageIO.read(new File(filePath));
+                        ImageIO.write(img, "JPG", clientSocket.getOutputStream());
+                        System.out.println("Image envoyée");                        
+                    } else if (type.equals("txt")) {
+                        ABC A = new ABC();
+                        A.mystere(new FileInputStream(filePath), clientSocket.getOutputStream());
+                        System.out.println("Fichier texte envoyé");                        
+                    }
                 }
                 clientSocket.close();
             } catch (IOException e) {
